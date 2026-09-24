@@ -1,49 +1,67 @@
+@model IEnumerable<DemoMVC.Models.Student>
+
 @{
-    ViewData["Title"] = "Student";
+    ViewData["Title"] = "Danh sách sinh viên";
 }
 
-<div class="container">
+<h1>Danh sách sinh viên</h1>
 
-    <h1>View Index StudentController</h1>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
 
-    <ul>
-        <li>1. Tạo form để gửi dữ liệu "Họ tên" từ view lên controller</li>
-        <li>2. Controller nhận dữ liệu từ view gửi lên và xử lý</li>
-        <li>3. Hiển thị kết quả sau khi xử lý</li>
-    </ul>
+<p>
+    <a asp-action="Create" class="btn btn-primary">
+        + Thêm sinh viên
+    </a>
+</p>
 
-    <form asp-controller="Student" asp-action="Index" method="post">
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Tuổi</th>
+            <th>Email</th>
+            <th>Chức năng</th>
+        </tr>
+    </thead>
 
-        <input type="text"
-               name="fullName"
-               placeholder="Nhập họ tên"
-               style="width:270px; height:45px; font-size:20px;" />
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.Id</td>
 
-        <input type="text"
-               name="school"
-               placeholder="Nhập trường"
-               style="width:270px; height:45px; font-size:20px;" />
+                <td>@student.Name</td>
 
-        <input type="text"
-               name="address"
-               placeholder="Nhập địa chỉ"
-               style="width:270px; height:45px; font-size:20px;" />
+                <td>@student.Age</td>
 
-        <button type="submit"
-                style="height:45px; font-size:20px;">
-            Gửi dữ liệu
-        </button>
+                <td>@student.Email</td>
 
-    </form>
+                <td>
+                    <a asp-action="Details"
+                       asp-route-id="@student.Id"
+                       class="btn btn-info btn-sm">
+                        Xem
+                    </a>
 
-    @if (ViewBag.FullName != null)
-    {
-        <h2>
-            FullName: @ViewBag.FullName,
-            School: @ViewBag.School;
-            Address: @ViewBag.Address,
-            HoTen: @ViewData["HoTen"]
-        </h2>
-    }
+                    <a asp-action="Edit"
+                       asp-route-id="@student.Id"
+                       class="btn btn-warning btn-sm">
+                        Sửa
+                    </a>
 
-</div>
+                    <a asp-action="Delete"
+                       asp-route-id="@student.Id"
+                       class="btn btn-danger btn-sm">
+                        Xóa
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
