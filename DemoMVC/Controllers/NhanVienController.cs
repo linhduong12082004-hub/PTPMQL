@@ -20,9 +20,18 @@ namespace DemoMVC.Controllers
         }
 
         // GET: NhanVien
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            int page = 1,
+            int pageSize = PaginatedList<NhanVien>.DefaultPageSize)
         {
-            return View(await _context.NhanViens.ToListAsync());
+            var nhanViens = await PaginatedList<NhanVien>.CreateAsync(
+                _context.NhanViens
+                    .AsNoTracking()
+                    .OrderBy(nhanVien => nhanVien.Id),
+                page,
+                pageSize);
+
+            return View(nhanViens);
         }
 
         // GET: NhanVien/Details/5

@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Models;
 
@@ -5,12 +6,14 @@ namespace DemoMVC.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(
+            DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
         public DbSet<Student> Students { get; set; }
         public DbSet<NhanVien> NhanViens { get; set; }
+        public DbSet<Department> Departments { get; set; }
     }
 }

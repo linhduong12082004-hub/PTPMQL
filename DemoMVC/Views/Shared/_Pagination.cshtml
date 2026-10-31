@@ -1,0 +1,91 @@
+@model DemoMVC.Models.IPaginatedList
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mt-3">
+    <div class="small text-muted">
+        @if (Model.TotalCount == 0)
+        {
+            <span>Tổng 0 bản ghi</span>
+        }
+        else
+        {
+            var firstItem = (Model.PageNumber - 1) * Model.PageSize + 1;
+            var lastItem = Math.Min(Model.PageNumber * Model.PageSize, Model.TotalCount);
+            <span>Hiển thị @firstItem–@lastItem trong tổng @Model.TotalCount bản ghi · Trang @Model.PageNumber/@Model.TotalPages</span>
+        }
+    </div>
+
+    <form method="get" class="d-flex align-items-center gap-2">
+        <input type="hidden" name="page" value="1" />
+        <label for="pageSize" class="form-label mb-0 text-nowrap">Số dòng/trang</label>
+        <select id="pageSize" name="pageSize" class="form-select form-select-sm">
+            @foreach (var size in Model.PageSizeOptions)
+            {
+                if (size == Model.PageSize)
+                {
+                    <option value="@size" selected>@size</option>
+                }
+                else
+                {
+                    <option value="@size">@size</option>
+                }
+            }
+        </select>
+        <button type="submit" class="btn btn-outline-secondary btn-sm text-nowrap">Áp dụng</button>
+    </form>
+</div>
+
+@if (Model.TotalPages > 0)
+{
+    var firstVisiblePage = Math.Max(1, Model.PageNumber - 2);
+    var lastVisiblePage = Math.Min(Model.TotalPages, Model.PageNumber + 2);
+
+    <nav aria-label="Điều hướng phân trang" class="mt-2">
+        <ul class="pagination pagination-sm justify-content-center flex-wrap">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-route-page="1" asp-route-pageSize="@Model.PageSize">Đầu</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-route-page="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize">Trước</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled"><span class="page-link" aria-disabled="true">Đầu</span></li>
+                <li class="page-item disabled"><span class="page-link" aria-disabled="true">Trước</span></li>
+            }
+
+            @for (var pageNumber = firstVisiblePage; pageNumber <= lastVisiblePage; pageNumber++)
+            {
+                if (pageNumber == Model.PageNumber)
+                {
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">@pageNumber</span>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-route-page="@pageNumber" asp-route-pageSize="@Model.PageSize">@pageNumber</a>
+                    </li>
+                }
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-route-page="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize">Tiếp</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" asp-route-page="@Model.TotalPages" asp-route-pageSize="@Model.PageSize">Cuối</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled"><span class="page-link" aria-disabled="true">Tiếp</span></li>
+                <li class="page-item disabled"><span class="page-link" aria-disabled="true">Cuối</span></li>
+            }
+        </ul>
+    </nav>
+}
