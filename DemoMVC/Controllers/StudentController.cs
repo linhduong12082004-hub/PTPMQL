@@ -88,32 +88,46 @@ namespace DemoMVC.Controllers
 
             if (ModelState.IsValid)
             {
-                await StudentCodeGenerationLock.WaitAsync();
-                try
+                for (var attempt = 0; attempt < 10; attempt++)
                 {
-                    var generationResult = await GenerateStudentCodeAsync(student.AdmissionYear, student.EducationSystemCode, student.MajorCode);
-                    if (!generationResult.Success)
+                    await StudentCodeGenerationLock.WaitAsync();
+                    try
                     {
-                        ModelState.AddModelError(string.Empty, generationResult.Message);
-                    }
-                    else
-                    {
+                        var generationResult = await GenerateStudentCodeAsync(
+                            student.AdmissionYear,
+                            student.EducationSystemCode,
+                            student.MajorCode);
+
+                        if (!generationResult.Success)
+                        {
+                            ModelState.AddModelError(string.Empty, generationResult.Message);
+                            break;
+                        }
+
+                        if (await _context.Students.AnyAsync(s => s.StudentCode == generationResult.Code))
+                        {
+                            continue;
+                        }
+
                         student.StudentCode = generationResult.Code;
-                        try
+
+                        _context.Students.Add(student);
+                        await _context.SaveChangesAsync();
+                        return SuccessResult("Thêm sinh viên thành công!");
+                    }
+                    catch (DbUpdateException)
+                    {
+                        _context.Entry(student).State = EntityState.Detached;
+                        if (attempt == 9)
                         {
-                            _context.Students.Add(student);
-                            await _context.SaveChangesAsync();
-                            return SuccessResult("Thêm sinh viên thành công!");
-                        }
-                        catch (DbUpdateException)
-                        {
-                            ModelState.AddModelError(string.Empty, "Mã sinh viên đã được tạo bởi người khác. Vui lòng thử lại.");
+                            ModelState.AddModelError(string.Empty,
+                                "Không thể tạo mã duy nhất sau nhiều lần thử. Vui lòng thử lại.");
                         }
                     }
-                }
-                finally
-                {
-                    StudentCodeGenerationLock.Release();
+                    finally
+                    {
+                        StudentCodeGenerationLock.Release();
+                    }
                 }
             }
 

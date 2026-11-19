@@ -55,6 +55,9 @@ namespace DemoMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DepartmentCode,Name")] Department department)
         {
+            department.DepartmentCode = department.DepartmentCode?.Trim() ?? string.Empty;
+            department.Name = department.Name?.Trim() ?? string.Empty;
+
             if (string.IsNullOrWhiteSpace(department.DepartmentCode))
             {
                 ModelState.AddModelError(nameof(Department.DepartmentCode), "Vui lòng nhập mã khoa");
@@ -102,6 +105,9 @@ namespace DemoMVC.Controllers
             {
                 return NotFound();
             }
+
+            department.DepartmentCode = department.DepartmentCode?.Trim() ?? string.Empty;
+            department.Name = department.Name?.Trim() ?? string.Empty;
 
             if (ModelState.IsValid)
             {
