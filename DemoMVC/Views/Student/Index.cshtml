@@ -1,4 +1,4 @@
-@model IEnumerable<DemoMVC.Models.Student>
+@model DemoMVC.Models.PaginatedList<DemoMVC.Models.Student>
 
 @{
     ViewData["Title"] = "Danh sách sinh viên";
@@ -8,13 +8,13 @@
 
 @if (TempData["Success"] != null)
 {
-    <div class="alert alert-success">
+    <div class="alert alert-success" role="status">
         @TempData["Success"]
     </div>
 }
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">
+    <a asp-action="Create" class="btn btn-primary" data-modal-url>
         + Thêm sinh viên
     </a>
 </p>
@@ -23,41 +23,46 @@
     <thead>
         <tr>
             <th>ID</th>
+            <th>Mã sinh viên</th>
             <th>Họ tên</th>
             <th>Tuổi</th>
             <th>Email</th>
+            <th>Năm nhập học</th>
+            <th>Khoa</th>
             <th>Chức năng</th>
         </tr>
     </thead>
 
     <tbody>
-        @foreach (var student in Model)
+        @foreach (var student in Model.Items)
         {
             <tr>
                 <td>@student.Id</td>
-
+                <td>@student.StudentCode</td>
                 <td>@student.Name</td>
-
                 <td>@student.Age</td>
-
                 <td>@student.Email</td>
-
+                <td>@student.AdmissionYear</td>
+                <td>@(student.Department?.Name ?? "Chưa phân khoa")</td>
                 <td>
                     <a asp-action="Details"
                        asp-route-id="@student.Id"
-                       class="btn btn-info btn-sm">
+                       class="btn btn-info btn-sm"
+                       data-modal-url>
                         Xem
                     </a>
 
                     <a asp-action="Edit"
                        asp-route-id="@student.Id"
-                       class="btn btn-warning btn-sm">
+                       class="btn btn-warning btn-sm"
+                       data-modal-url>
                         Sửa
                     </a>
 
                     <a asp-action="Delete"
                        asp-route-id="@student.Id"
-                       class="btn btn-danger btn-sm">
+                       class="btn btn-danger btn-sm"
+                       data-modal-url>
                         Xóa
                     </a>
                 </td>
@@ -65,3 +70,10 @@
         }
     </tbody>
 </table>
+<partial name="_Pagination" model="Model" />
+
+<div class="modal fade" id="crudModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content"></div>
+    </div>
+</div>

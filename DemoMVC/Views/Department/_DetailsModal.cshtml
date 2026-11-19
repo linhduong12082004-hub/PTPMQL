@@ -1,0 +1,19 @@
+@model DemoMVC.Models.Department
+
+<div class="modal-header">
+    <h5 class="modal-title">Thông tin khoa</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+</div>
+<div class="modal-body">
+    <dl class="row mb-0">
+        <dt class="col-sm-4">ID</dt>
+        <dd class="col-sm-8">@Model.DepartmentId</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DepartmentCode)</dt>
+        <dd class="col-sm-8">@Model.DepartmentCode</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Name)</dt>
+        <dd class="col-sm-8">@Model.Name</dd>
+    </dl>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>

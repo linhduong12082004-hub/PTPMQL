@@ -1,0 +1,51 @@
+@model IEnumerable<DemoMVC.Models.Department>
+
+@{
+    ViewData["Title"] = "Danh sách khoa";
+}
+
+<h1>Danh sách khoa</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" role="status">@TempData["Success"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary" data-modal-url>+ Thêm khoa</a>
+</p>
+
+<table class="table table-bordered table-striped" id="departmentTable">
+    <thead>
+        <tr>
+            <th>Mã khoa</th>
+            <th>Tên khoa</th>
+            <th>Chức năng</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.DepartmentCode</td>
+                <td>@item.Name</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.DepartmentId" class="btn btn-info btn-sm" data-modal-url>Xem</a>
+                    <a asp-action="Edit" asp-route-id="@item.DepartmentId" class="btn btn-warning btn-sm" data-modal-url>Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.DepartmentId" class="btn btn-danger btn-sm" data-modal-url>Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="crudModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content"></div>
+    </div>
+</div>

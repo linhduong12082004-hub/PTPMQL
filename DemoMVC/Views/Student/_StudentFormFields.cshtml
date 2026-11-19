@@ -1,0 +1,44 @@
+@model DemoMVC.Models.Student
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+<div class="mb-3">
+    <label asp-for="AdmissionYear" class="form-label"></label>
+    <select asp-for="AdmissionYear" asp-items="ViewBag.AdmissionYears" class="form-select"></select>
+    <span asp-validation-for="AdmissionYear" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="EducationSystemCode" class="form-label"></label>
+    <select asp-for="EducationSystemCode" asp-items="ViewBag.EducationSystems" class="form-select"></select>
+    <span asp-validation-for="EducationSystemCode" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="MajorCode" class="form-label"></label>
+    <select asp-for="MajorCode" asp-items="ViewBag.MajorCodes" class="form-select"></select>
+    <span asp-validation-for="MajorCode" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Age" class="form-label"></label>
+    <input asp-for="Age" type="number" class="form-control" />
+    <span asp-validation-for="Age" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Email" class="form-label"></label>
+    <input asp-for="Email" type="email" class="form-control" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="DepartmentId" class="form-label"></label>
+    <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="form-select">
+        <option value="">-- Chọn khoa --</option>
+    </select>
+    <span asp-validation-for="DepartmentId" class="text-danger"></span>
+</div>

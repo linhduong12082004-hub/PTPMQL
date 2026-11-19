@@ -19,6 +19,11 @@
         </p>
 
         <p>
+            <strong>Mã sinh viên:</strong>
+            @Model.StudentCode
+        </p>
+
+        <p>
             <strong>Họ tên:</strong>
             @Model.Name
         </p>
@@ -31,6 +36,11 @@
         <p>
             <strong>Email:</strong>
             @Model.Email
+        </p>
+
+        <p>
+            <strong>Khoa:</strong>
+            @(Model.Department?.Name ?? "Chưa phân khoa")
         </p>
 
     </div>

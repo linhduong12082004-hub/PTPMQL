@@ -1,0 +1,16 @@
+@model DemoMVC.Models.Department
+
+<div class="modal-header">
+    <h5 class="modal-title">Cập nhật khoa</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+</div>
+<form asp-action="Edit" asp-route-id="@Model.DepartmentId" method="post" data-ajax-modal-form>
+    <input asp-for="DepartmentId" type="hidden" />
+    <div class="modal-body">
+        <partial name="_DepartmentFormFields" model="Model" />
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    </div>
+</form>

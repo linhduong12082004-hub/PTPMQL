@@ -1,0 +1,23 @@
+@model DemoMVC.Models.Department
+
+@{
+    ViewData["Title"] = "Chi tiết khoa";
+}
+
+<h1>Chi tiết khoa</h1>
+
+<div>
+    <h4>Khoa</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.DepartmentCode)</dt>
+        <dd class="col-sm-10">@Model.DepartmentCode</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Name)</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.DepartmentId" class="btn btn-warning">Sửa</a>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</div>

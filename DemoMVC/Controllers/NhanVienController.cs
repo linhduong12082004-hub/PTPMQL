@@ -49,13 +49,17 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            return View(nhanVien);
+            return IsAjaxRequest()
+                ? PartialView("_DetailsModal", nhanVien)
+                : View(nhanVien);
         }
 
         // GET: NhanVien/Create
         public IActionResult Create()
         {
-            return View();
+            return IsAjaxRequest()
+                ? PartialView("_CreateModal", new NhanVien())
+                : View();
         }
 
         // POST: NhanVien/Create
@@ -63,15 +67,16 @@ namespace DemoMVC.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,MaNhanVien,HoTen,ChucVu,PhongBan,Luong")] NhanVien nhanVien)
+        public async Task<IActionResult> Create([Bind("MaNhanVien,HoTen,ChucVu,PhongBan,Luong")] NhanVien nhanVien)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(nhanVien);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return SuccessResult("Thêm nhân viên thành công!");
             }
-            return View(nhanVien);
+
+            return InvalidFormResult("_CreateModal", nhanVien);
         }
 
         // GET: NhanVien/Edit/5
@@ -87,7 +92,9 @@ namespace DemoMVC.Controllers
             {
                 return NotFound();
             }
-            return View(nhanVien);
+            return IsAjaxRequest()
+                ? PartialView("_EditModal", nhanVien)
+                : View(nhanVien);
         }
 
         // POST: NhanVien/Edit/5
@@ -120,9 +127,10 @@ namespace DemoMVC.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return SuccessResult("Cập nhật nhân viên thành công!");
             }
-            return View(nhanVien);
+
+            return InvalidFormResult("_EditModal", nhanVien);
         }
 
         // GET: NhanVien/Delete/5
@@ -140,7 +148,9 @@ namespace DemoMVC.Controllers
                 return NotFound();
             }
 
-            return View(nhanVien);
+            return IsAjaxRequest()
+                ? PartialView("_DeleteModal", nhanVien)
+                : View(nhanVien);
         }
 
         // POST: NhanVien/Delete/5
@@ -149,18 +159,43 @@ namespace DemoMVC.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var nhanVien = await _context.NhanViens.FindAsync(id);
-            if (nhanVien != null)
+            if (nhanVien == null)
             {
-                _context.NhanViens.Remove(nhanVien);
+                return NotFound();
             }
 
+            _context.NhanViens.Remove(nhanVien);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return SuccessResult("Xóa nhân viên thành công!");
         }
 
         private bool NhanVienExists(int id)
         {
             return _context.NhanViens.Any(e => e.Id == id);
+        }
+
+        private bool IsAjaxRequest()
+        {
+            return Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+        }
+
+        private IActionResult SuccessResult(string message)
+        {
+            TempData["Success"] = message;
+            return IsAjaxRequest()
+                ? Json(new { success = true })
+                : RedirectToAction(nameof(Index));
+        }
+
+        private IActionResult InvalidFormResult(string partialName, NhanVien nhanVien)
+        {
+            if (IsAjaxRequest())
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                return PartialView(partialName, nhanVien);
+            }
+
+            return View(partialName == "_CreateModal" ? "Create" : "Edit", nhanVien);
         }
     }
 }

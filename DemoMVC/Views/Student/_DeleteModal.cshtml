@@ -1,0 +1,17 @@
+@model DemoMVC.Models.Student
+
+<div class="modal-header">
+    <h5 class="modal-title">Xóa sinh viên</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+</div>
+<div class="modal-body">
+    <p>Bạn có chắc chắn muốn xóa sinh viên <strong>@Model.Name</strong> (@Model.StudentCode)?</p>
+    <p class="text-danger mb-0">Thao tác này không thể hoàn tác.</p>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" data-ajax-modal-form>
+        <input asp-for="Id" type="hidden" />
+        <button type="submit" class="btn btn-danger">Xóa sinh viên</button>
+    </form>
+</div>

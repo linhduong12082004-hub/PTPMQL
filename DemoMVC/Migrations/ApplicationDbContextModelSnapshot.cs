@@ -34,7 +34,9 @@ namespace DemoMVC.Migrations
 
                     b.HasKey("DepartmentId");
 
-                    b.ToTable("Departments");
+                    b.HasIndex("DepartmentCode");
+
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("DemoMVC.Models.NhanVien", b =>
@@ -68,7 +70,7 @@ namespace DemoMVC.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NhanViens");
+                    b.ToTable("NhanViens", (string)null);
                 });
 
             modelBuilder.Entity("DemoMVC.Models.Student", b =>
@@ -77,13 +79,24 @@ namespace DemoMVC.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("AdmissionYear")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Age")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("EducationSystemCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MajorCode")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -101,7 +114,9 @@ namespace DemoMVC.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Students");
+                    b.HasIndex("StudentCode");
+
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("DemoMVC.Models.Student", b =>

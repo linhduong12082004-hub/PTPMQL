@@ -15,5 +15,16 @@ namespace DemoMVC.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<NhanVien> NhanViens { get; set; }
         public DbSet<Department> Departments { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Department>()
+                .HasIndex(department => department.DepartmentCode);
+
+            modelBuilder.Entity<Student>()
+                .HasIndex(student => student.StudentCode);
+        }
     }
 }

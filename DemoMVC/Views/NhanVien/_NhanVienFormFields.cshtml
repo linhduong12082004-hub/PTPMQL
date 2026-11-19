@@ -1,0 +1,28 @@
+@model DemoMVC.Models.NhanVien
+
+<div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+<div class="mb-3">
+    <label asp-for="MaNhanVien" class="form-label"></label>
+    <input asp-for="MaNhanVien" class="form-control" />
+    <span asp-validation-for="MaNhanVien" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="HoTen" class="form-label"></label>
+    <input asp-for="HoTen" class="form-control" />
+    <span asp-validation-for="HoTen" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="ChucVu" class="form-label"></label>
+    <input asp-for="ChucVu" class="form-control" />
+    <span asp-validation-for="ChucVu" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="PhongBan" class="form-label"></label>
+    <input asp-for="PhongBan" class="form-control" />
+    <span asp-validation-for="PhongBan" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Luong" class="form-label"></label>
+    <input asp-for="Luong" type="number" step="0.01" class="form-control" />
+    <span asp-validation-for="Luong" class="text-danger"></span>
+</div>

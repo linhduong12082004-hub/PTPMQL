@@ -1,0 +1,15 @@
+@model DemoMVC.Models.NhanVien
+
+<div class="modal-header">
+    <h5 class="modal-title">Thêm nhân viên</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+</div>
+<form asp-action="Create" method="post" data-ajax-modal-form>
+    <div class="modal-body">
+        <partial name="_NhanVienFormFields" model="Model" />
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
+    </div>
+</form>

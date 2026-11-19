@@ -1,0 +1,31 @@
+@model DemoMVC.Models.Student
+
+<div class="modal-header">
+    <h5 class="modal-title">Thông tin sinh viên</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+</div>
+<div class="modal-body">
+    <dl class="row mb-0">
+        <dt class="col-sm-4">ID</dt>
+        <dd class="col-sm-8">@Model.Id</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.StudentCode)</dt>
+        <dd class="col-sm-8">@Model.StudentCode</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.AdmissionYear)</dt>
+        <dd class="col-sm-8">@Model.AdmissionYear</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.EducationSystemCode)</dt>
+        <dd class="col-sm-8">@Model.EducationSystemCode</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.MajorCode)</dt>
+        <dd class="col-sm-8">@Model.MajorCode</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Name)</dt>
+        <dd class="col-sm-8">@Model.Name</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Age)</dt>
+        <dd class="col-sm-8">@Model.Age</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.Email)</dt>
+        <dd class="col-sm-8">@Model.Email</dd>
+        <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DepartmentId)</dt>
+        <dd class="col-sm-8">@(Model.Department?.Name ?? "Chưa phân khoa")</dd>
+    </dl>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+</div>
