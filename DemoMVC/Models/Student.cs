@@ -9,9 +9,6 @@ namespace DemoMVC.Models
         public int Id { get; set; }
 
         // Mã sinh viên, ví dụ: 2821050199
-        [Required(ErrorMessage = "Vui lòng nhập mã sinh viên")]
-        [StringLength(10, MinimumLength = 10,
-            ErrorMessage = "Mã sinh viên phải có đúng 10 ký tự")]
         [Display(Name = "Mã sinh viên")]
         public string StudentCode { get; set; } = string.Empty;
 
