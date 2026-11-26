@@ -10,6 +10,17 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var isDevelopment = builder.Environment.IsDevelopment();
+var hasAdminSeed = HasConfigurationValues(
+    builder.Configuration,
+    "AdminSeed:UserName",
+    "AdminSeed:Email",
+    "AdminSeed:Password");
+var hasSmtpCredentials = HasConfigurationValues(
+    builder.Configuration,
+    "Email:SmtpUserName",
+    "Email:SmtpPassword");
+var canInitializeIdentity = hasAdminSeed && hasSmtpCredentials;
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(options =>
@@ -58,32 +69,55 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
 builder.Services.Configure<SecurityStampValidatorOptions>(options =>
     options.ValidationInterval = TimeSpan.Zero);
 
-builder.Services
+var adminSeedOptions = builder.Services
     .AddOptions<AdminSeedOptions>()
-    .Bind(builder.Configuration.GetSection(AdminSeedOptions.SectionName))
-    .ValidateDataAnnotations()
-    .Validate(options => !string.IsNullOrWhiteSpace(options.UserName), "AdminSeed:UserName is required.")
-    .Validate(options => !string.IsNullOrWhiteSpace(options.Email), "AdminSeed:Email is required.")
-    .Validate(options => !string.IsNullOrWhiteSpace(options.Password), "AdminSeed:Password is required.")
-    .ValidateOnStart();
+    .Bind(builder.Configuration.GetSection(AdminSeedOptions.SectionName));
+if (!isDevelopment || canInitializeIdentity)
+{
+    adminSeedOptions
+        .ValidateDataAnnotations()
+        .Validate(options => !string.IsNullOrWhiteSpace(options.UserName), "AdminSeed:UserName is required.")
+        .Validate(options => !string.IsNullOrWhiteSpace(options.Email), "AdminSeed:Email is required.")
+        .Validate(options => !string.IsNullOrWhiteSpace(options.Password), "AdminSeed:Password is required.")
+        .ValidateOnStart();
+}
 
-builder.Services
+var emailOptions = builder.Services
     .AddOptions<EmailOptions>()
     .Bind(builder.Configuration.GetSection(EmailOptions.SectionName))
-    .ValidateDataAnnotations()
     .Validate(
         options => Uri.TryCreate(options.PublicBaseUrl, UriKind.Absolute, out var uri) &&
                    (uri.Scheme == Uri.UriSchemeHttps ||
-                    (builder.Environment.IsDevelopment() && uri.IsLoopback)),
+                    (isDevelopment && uri.IsLoopback)),
         "Email:PublicBaseUrl must be an absolute HTTPS URL (HTTP loopback is allowed only in Development).")
     .ValidateOnStart();
+if (!isDevelopment || hasSmtpCredentials)
+{
+    emailOptions.ValidateDataAnnotations();
+}
 
 builder.Services.AddScoped<IdentitySeeder>();
-builder.Services.AddHostedService<IdentitySeedHostedService>();
+if (!isDevelopment || canInitializeIdentity)
+{
+    builder.Services.AddHostedService<IdentitySeedHostedService>();
+}
 builder.Services.AddSingleton<IEmailRequestLimiter, EmailRequestLimiter>();
-builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
+if (isDevelopment && !hasSmtpCredentials)
+{
+    builder.Services.AddSingleton<IEmailSender, DevelopmentEmailUnavailableSender>();
+}
+else
+{
+    builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
+}
 
 var app = builder.Build();
+
+if (isDevelopment && !canInitializeIdentity)
+{
+    app.Logger.LogWarning(
+        "Development setup is incomplete. Identity seeding and email sending are disabled until AdminSeed and SMTP credentials are configured.");
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -106,5 +140,10 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
+
+static bool HasConfigurationValues(IConfiguration configuration, params string[] keys)
+{
+    return keys.All(key => !string.IsNullOrWhiteSpace(configuration[key]));
+}
 
 public partial class Program { }
