@@ -1,10 +1,11 @@
 
 using Microsoft.EntityFrameworkCore;
 using DemoMVC.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DemoMVC.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options)

@@ -1,10 +1,12 @@
 using DemoMVC.Data;
 using DemoMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DemoMVC.Controllers
 {
+    [Authorize(Roles = "Administrator,User")]
     public class DepartmentController : Controller
     {
         private readonly ApplicationDbContext _context;

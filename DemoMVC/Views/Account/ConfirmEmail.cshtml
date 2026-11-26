@@ -1,0 +1,18 @@
+@model DemoMVC.Models.ConfirmEmailViewModel
+
+@{
+    ViewData["Title"] = "Xác minh email";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <h1>Xác minh email</h1>
+        <p>Nhấn xác nhận để hoàn tất kích hoạt tài khoản.</p>
+        <form asp-action="ConfirmEmail" method="post">
+            <input asp-for="UserId" type="hidden" />
+            <input asp-for="Token" type="hidden" />
+            <button type="submit" class="btn btn-primary">Xác nhận email</button>
+            <a asp-action="Login" class="btn btn-link">Quay lại đăng nhập</a>
+        </form>
+    </div>
+</div>
