@@ -19,6 +19,40 @@
     </a>
 </p>
 
+<form method="get" class="row g-2 align-items-end mb-3">
+    <input type="hidden" name="page" value="1" />
+    <input type="hidden" name="pageSize" value="@Model.PageSize" />
+    <div class="col-md-3">
+        <label for="searchTerm" class="form-label">Tìm theo tên hoặc mã sinh viên</label>
+        <input id="searchTerm" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label for="departmentId" class="form-label">Khoa</label>
+        <select id="departmentId" name="departmentId" asp-items="ViewBag.Departments" class="form-select">
+            <option value="">Tất cả khoa</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label for="sortBy" class="form-label">Sắp xếp theo</label>
+        <select id="sortBy" name="sortBy" class="form-select">
+            <option value="id" selected="@(ViewBag.SortBy == "id")">Mặc định</option>
+            <option value="name" selected="@(ViewBag.SortBy == "name")">Tên</option>
+            <option value="studentCode" selected="@(ViewBag.SortBy == "studentcode")">Mã sinh viên</option>
+            <option value="admissionYear" selected="@(ViewBag.SortBy == "admissionyear")">Năm nhập học</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label for="sortOrder" class="form-label">Thứ tự</label>
+        <select id="sortOrder" name="sortOrder" class="form-select">
+            <option value="asc" selected="@(ViewBag.SortOrder == "asc")">Tăng dần</option>
+            <option value="desc" selected="@(ViewBag.SortOrder == "desc")">Giảm dần</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-primary">Áp dụng</button>
+    </div>
+</form>
+
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
@@ -34,39 +68,48 @@
     </thead>
 
     <tbody>
-        @foreach (var student in Model.Items)
+        @if (Model.Items.Count == 0)
         {
             <tr>
-                <td>@student.Id</td>
-                <td>@student.StudentCode</td>
-                <td>@student.Name</td>
-                <td>@student.Age</td>
-                <td>@student.Email</td>
-                <td>@student.AdmissionYear</td>
-                <td>@(student.Department?.Name ?? "Chưa phân khoa")</td>
-                <td>
-                    <a asp-action="Details"
-                       asp-route-id="@student.Id"
-                       class="btn btn-info btn-sm"
-                       data-modal-url>
-                        Xem
-                    </a>
-
-                    <a asp-action="Edit"
-                       asp-route-id="@student.Id"
-                       class="btn btn-warning btn-sm"
-                       data-modal-url>
-                        Sửa
-                    </a>
-
-                    <a asp-action="Delete"
-                       asp-route-id="@student.Id"
-                       class="btn btn-danger btn-sm"
-                       data-modal-url>
-                        Xóa
-                    </a>
-                </td>
+                <td colspan="8" class="text-center text-muted">Không có dữ liệu sinh viên phù hợp.</td>
             </tr>
+        }
+        else
+        {
+            @foreach (var student in Model.Items)
+            {
+                <tr>
+                    <td>@student.Id</td>
+                    <td>@student.StudentCode</td>
+                    <td>@student.Name</td>
+                    <td>@student.Age</td>
+                    <td>@student.Email</td>
+                    <td>@student.AdmissionYear</td>
+                    <td>@(student.Department?.Name ?? "Chưa phân khoa")</td>
+                    <td>
+                        <a asp-action="Details"
+                           asp-route-id="@student.Id"
+                           class="btn btn-info btn-sm"
+                           data-modal-url>
+                            Xem
+                        </a>
+
+                        <a asp-action="Edit"
+                           asp-route-id="@student.Id"
+                           class="btn btn-warning btn-sm"
+                           data-modal-url>
+                            Sửa
+                        </a>
+
+                        <a asp-action="Delete"
+                           asp-route-id="@student.Id"
+                           class="btn btn-danger btn-sm"
+                           data-modal-url>
+                            Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>

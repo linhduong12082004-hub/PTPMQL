@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace DemoMVC.Models
 {
@@ -14,7 +15,8 @@ namespace DemoMVC.Models
             int pageNumber,
             int pageSize,
             int totalCount,
-            int totalPages)
+            int totalPages,
+            IReadOnlyDictionary<string, string>? routeValues)
         {
             Items = items;
             PageNumber = pageNumber;
@@ -22,6 +24,9 @@ namespace DemoMVC.Models
             TotalCount = totalCount;
             TotalPages = totalPages;
             PageSizeOptions = AllowedPageSizes;
+            RouteValues = routeValues is null
+                ? new Dictionary<string, string>()
+                : routeValues.ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public IReadOnlyList<T> Items { get; }
@@ -32,11 +37,13 @@ namespace DemoMVC.Models
         public bool HasPreviousPage => PageNumber > 1;
         public bool HasNextPage => PageNumber < TotalPages;
         public IReadOnlyList<int> PageSizeOptions { get; }
+        public IReadOnlyDictionary<string, string> RouteValues { get; }
 
         public static async Task<PaginatedList<T>> CreateAsync(
             IQueryable<T> source,
             int pageNumber,
-            int pageSize)
+            int pageSize,
+            IReadOnlyDictionary<string, string>? routeValues = null)
         {
             var totalCount = await source.CountAsync();
             var normalizedPageSize = AllowedPageSizes.Contains(pageSize)
@@ -57,7 +64,8 @@ namespace DemoMVC.Models
                 normalizedPageNumber,
                 normalizedPageSize,
                 totalCount,
-                totalPages);
+                totalPages,
+                routeValues);
         }
     }
 }

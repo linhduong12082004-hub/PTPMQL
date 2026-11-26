@@ -20,15 +20,80 @@ namespace DemoMVC.Controllers
 
         public async Task<IActionResult> Index(
             int page = 1,
-            int pageSize = PaginatedList<Student>.DefaultPageSize)
+            int pageSize = PaginatedList<Student>.DefaultPageSize,
+            string? searchTerm = null,
+            int? departmentId = null,
+            string? sortBy = "id",
+            string? sortOrder = "asc")
         {
+            IQueryable<Student> query = _context.Students
+                .Include(student => student.Department)
+                .AsNoTracking();
+            var normalizedSortBy = (sortBy?.Trim().ToLowerInvariant()) switch
+            {
+                "name" => "name",
+                "studentcode" => "studentcode",
+                "admissionyear" => "admissionyear",
+                _ => "id"
+            };
+            var normalizedSortOrder = string.Equals(sortOrder, "desc", StringComparison.OrdinalIgnoreCase)
+                ? "desc"
+                : "asc";
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var normalizedSearchTerm = searchTerm.Trim();
+                query = query.Where(student =>
+                    student.Name.Contains(normalizedSearchTerm) ||
+                    student.StudentCode.Contains(normalizedSearchTerm));
+            }
+
+            if (departmentId.HasValue)
+            {
+                query = query.Where(student => student.DepartmentId == departmentId.Value);
+            }
+
+            var descending = normalizedSortOrder == "desc";
+            query = normalizedSortBy switch
+            {
+                "name" => descending
+                    ? query.OrderByDescending(student => student.Name).ThenBy(student => student.Id)
+                    : query.OrderBy(student => student.Name).ThenBy(student => student.Id),
+                "studentcode" => descending
+                    ? query.OrderByDescending(student => student.StudentCode).ThenBy(student => student.Id)
+                    : query.OrderBy(student => student.StudentCode).ThenBy(student => student.Id),
+                "admissionyear" => descending
+                    ? query.OrderByDescending(student => student.AdmissionYear).ThenBy(student => student.Id)
+                    : query.OrderBy(student => student.AdmissionYear).ThenBy(student => student.Id),
+                _ => descending
+                    ? query.OrderByDescending(student => student.Id)
+                    : query.OrderBy(student => student.Id)
+            };
+
+            await LoadDepartmentsAsync(departmentId);
+            ViewBag.SearchTerm = searchTerm?.Trim() ?? string.Empty;
+            ViewBag.SortBy = normalizedSortBy;
+            ViewBag.SortOrder = normalizedSortOrder;
+
+            var routeValues = new Dictionary<string, string>();
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                routeValues["searchTerm"] = searchTerm.Trim();
+            }
+
+            if (departmentId.HasValue)
+            {
+                routeValues["departmentId"] = departmentId.Value.ToString();
+            }
+
+            routeValues["sortBy"] = normalizedSortBy;
+            routeValues["sortOrder"] = normalizedSortOrder;
+
             var students = await PaginatedList<Student>.CreateAsync(
-                _context.Students
-                    .Include(student => student.Department)
-                    .AsNoTracking()
-                    .OrderBy(student => student.Id),
+                query,
                 page,
-                pageSize);
+                pageSize,
+                routeValues);
 
             return View(students);
         }

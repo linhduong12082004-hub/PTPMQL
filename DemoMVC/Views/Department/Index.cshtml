@@ -1,4 +1,4 @@
-@model IEnumerable<DemoMVC.Models.Department>
+@model DemoMVC.Models.PaginatedList<DemoMVC.Models.Department>
 
 @{
     ViewData["Title"] = "Danh sách khoa";
@@ -20,6 +20,28 @@
     <a asp-action="Create" class="btn btn-primary" data-modal-url>+ Thêm khoa</a>
 </p>
 
+<form method="get" class="row g-2 align-items-end mb-3">
+    <input type="hidden" name="page" value="1" />
+    <input type="hidden" name="pageSize" value="@Model.PageSize" />
+    <div class="col-md-4">
+        <label for="sortBy" class="form-label">Sắp xếp theo</label>
+        <select id="sortBy" name="sortBy" class="form-select">
+            <option value="name" selected="@(ViewBag.SortBy == "name")">Tên khoa</option>
+            <option value="departmentCode" selected="@(ViewBag.SortBy == "departmentcode")">Mã khoa</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label for="sortOrder" class="form-label">Thứ tự</label>
+        <select id="sortOrder" name="sortOrder" class="form-select">
+            <option value="asc" selected="@(ViewBag.SortOrder == "asc")">Tăng dần</option>
+            <option value="desc" selected="@(ViewBag.SortOrder == "desc")">Giảm dần</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-outline-primary">Áp dụng sắp xếp</button>
+    </div>
+</form>
+
 <table class="table table-bordered table-striped" id="departmentTable">
     <thead>
         <tr>
@@ -29,20 +51,30 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @if (Model.Items.Count == 0)
         {
             <tr>
-                <td>@item.DepartmentCode</td>
-                <td>@item.Name</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.DepartmentId" class="btn btn-info btn-sm" data-modal-url>Xem</a>
-                    <a asp-action="Edit" asp-route-id="@item.DepartmentId" class="btn btn-warning btn-sm" data-modal-url>Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@item.DepartmentId" class="btn btn-danger btn-sm" data-modal-url>Xóa</a>
-                </td>
+                <td colspan="3" class="text-center text-muted">Không có dữ liệu khoa.</td>
             </tr>
+        }
+        else
+        {
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.DepartmentCode</td>
+                    <td>@item.Name</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.DepartmentId" class="btn btn-info btn-sm" data-modal-url>Xem</a>
+                        <a asp-action="Edit" asp-route-id="@item.DepartmentId" class="btn btn-warning btn-sm" data-modal-url>Sửa</a>
+                        <a asp-action="Delete" asp-route-id="@item.DepartmentId" class="btn btn-danger btn-sm" data-modal-url>Xóa</a>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>
+<partial name="_Pagination" model="Model" />
 
 <div class="modal fade" id="crudModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">

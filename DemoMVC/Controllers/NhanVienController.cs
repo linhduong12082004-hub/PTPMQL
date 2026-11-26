@@ -22,14 +22,45 @@ namespace DemoMVC.Controllers
         // GET: NhanVien
         public async Task<IActionResult> Index(
             int page = 1,
-            int pageSize = PaginatedList<NhanVien>.DefaultPageSize)
+            int pageSize = PaginatedList<NhanVien>.DefaultPageSize,
+            string? sortBy = "id",
+            string? sortOrder = "asc")
         {
+            var query = _context.NhanViens.AsNoTracking();
+            var normalizedSortBy = (sortBy?.Trim().ToLowerInvariant()) switch
+            {
+                "hoten" => "hoten",
+                "manhanvien" => "manhanvien",
+                _ => "id"
+            };
+            var normalizedSortOrder = string.Equals(sortOrder, "desc", StringComparison.OrdinalIgnoreCase)
+                ? "desc"
+                : "asc";
+            var descending = normalizedSortOrder == "desc";
+            query = normalizedSortBy switch
+            {
+                "hoten" => descending
+                    ? query.OrderByDescending(nhanVien => nhanVien.HoTen).ThenBy(nhanVien => nhanVien.Id)
+                    : query.OrderBy(nhanVien => nhanVien.HoTen).ThenBy(nhanVien => nhanVien.Id),
+                "manhanvien" => descending
+                    ? query.OrderByDescending(nhanVien => nhanVien.MaNhanVien).ThenBy(nhanVien => nhanVien.Id)
+                    : query.OrderBy(nhanVien => nhanVien.MaNhanVien).ThenBy(nhanVien => nhanVien.Id),
+                _ => descending
+                    ? query.OrderByDescending(nhanVien => nhanVien.Id)
+                    : query.OrderBy(nhanVien => nhanVien.Id)
+            };
+
+            ViewBag.SortBy = normalizedSortBy;
+            ViewBag.SortOrder = normalizedSortOrder;
+            var routeValues = new Dictionary<string, string>();
+            routeValues["sortBy"] = normalizedSortBy;
+            routeValues["sortOrder"] = normalizedSortOrder;
+
             var nhanViens = await PaginatedList<NhanVien>.CreateAsync(
-                _context.NhanViens
-                    .AsNoTracking()
-                    .OrderBy(nhanVien => nhanVien.Id),
+                query,
                 page,
-                pageSize);
+                pageSize,
+                routeValues);
 
             return View(nhanViens);
         }

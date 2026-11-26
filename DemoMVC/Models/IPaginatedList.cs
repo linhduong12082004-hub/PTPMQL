@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace DemoMVC.Models
 {
     public interface IPaginatedList
@@ -9,5 +11,6 @@ namespace DemoMVC.Models
         bool HasPreviousPage { get; }
         bool HasNextPage { get; }
         IReadOnlyList<int> PageSizeOptions { get; }
+        IReadOnlyDictionary<string, string> RouteValues { get; }
     }
 }

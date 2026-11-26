@@ -14,12 +14,43 @@ namespace DemoMVC.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            int page = 1,
+            int pageSize = PaginatedList<Department>.DefaultPageSize,
+            string? sortBy = "name",
+            string? sortOrder = "asc")
         {
-            var departments = await _context.Departments
-                .AsNoTracking()
-                .OrderBy(d => d.Name)
-                .ToListAsync();
+            var query = _context.Departments.AsNoTracking();
+            var normalizedSortBy = (sortBy?.Trim().ToLowerInvariant()) switch
+            {
+                "departmentcode" => "departmentcode",
+                _ => "name"
+            };
+            var normalizedSortOrder = string.Equals(sortOrder, "desc", StringComparison.OrdinalIgnoreCase)
+                ? "desc"
+                : "asc";
+            var descending = normalizedSortOrder == "desc";
+            query = normalizedSortBy switch
+            {
+                "departmentcode" => descending
+                    ? query.OrderByDescending(department => department.DepartmentCode).ThenBy(department => department.DepartmentId)
+                    : query.OrderBy(department => department.DepartmentCode).ThenBy(department => department.DepartmentId),
+                _ => descending
+                    ? query.OrderByDescending(department => department.Name).ThenBy(department => department.DepartmentId)
+                    : query.OrderBy(department => department.Name).ThenBy(department => department.DepartmentId)
+            };
+
+            ViewBag.SortBy = normalizedSortBy;
+            ViewBag.SortOrder = normalizedSortOrder;
+            var routeValues = new Dictionary<string, string>();
+            routeValues["sortBy"] = normalizedSortBy;
+            routeValues["sortOrder"] = normalizedSortOrder;
+
+            var departments = await PaginatedList<Department>.CreateAsync(
+                query,
+                page,
+                pageSize,
+                routeValues);
 
             return View(departments);
         }
